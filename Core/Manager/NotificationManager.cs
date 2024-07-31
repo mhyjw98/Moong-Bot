@@ -1,0 +1,94 @@
+﻿using Discord;
+using Discord.WebSocket;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MoongBot.Core.Manager
+{
+    public class NotificationManager
+    {
+        private static DiscordSocketClient _client = ServiceManager.GetService<DiscordSocketClient>();
+        private static DatabaseManager _databaseManager = new DatabaseManager();
+        public static void ScheduleDailyWeatherCheck()
+        {
+            Console.WriteLine("ScheduleDailyWeatherCheck 로직 실행");
+            var now = DateTime.Now;
+            var scheduledTime = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0);
+
+            if (now > scheduledTime)
+            {
+                scheduledTime = scheduledTime.AddMinutes(1);
+            }
+
+            var delay = scheduledTime - now;
+            Task.Delay(delay).ContinueWith(async _ =>
+            {
+                while (true)
+                {
+                    Console.WriteLine("날씨 체크 로직 실행");
+                    await CheckWeatherAndNotifyAsync();
+                    await Task.Delay(TimeSpan.FromMinutes(1));
+                }
+            });
+        }
+
+        private static async Task CheckWeatherAndNotifyAsync()
+        {
+            Console.WriteLine("데이터 하나의 정보 검사");
+            var notifications = await _databaseManager.GetNotificationsAsync();
+            var userMentions = new List<string>();
+            var testUserMentions = new List<string>();
+
+            foreach (var (userId, city) in notifications)
+            {
+                Console.WriteLine($"탐색하는 유저 : {userId}, 도시명 : {city}");
+                var weatherData = await WeatherManager.GetWeatherAsync(city);
+
+                if (WeatherManager.IsRainy(weatherData))
+                {
+                    userMentions.Add($"<@{userId}>");
+                }
+                else
+                {
+                    testUserMentions.Add($"<@{userId}>");
+                }
+            }
+            var channel = _client.GetChannel(1267466762790764676) as IMessageChannel;
+            if (userMentions.Count > 0)
+            {
+                string userMentionsString = string.Join(" ", userMentions);
+                await channel.SendMessageAsync($"{userMentionsString} 오늘은 비가올 확률이 높아요! 우산을 챙기세요.");
+            }
+            if (testUserMentions.Count > 0)
+            {                
+                string testUserMentionsString = string.Join(" ", testUserMentions);
+                await channel.SendMessageAsync($"{testUserMentionsString} 테스트 : 오늘은 비가 안와요!");
+            }
+        }
+
+        public static async Task RegisterNotification(ulong userId, string city, ITextChannel channel)
+        {
+            if (!WeatherManager.IsValidCity(city))
+            {
+                await channel.SendMessageAsync("유효하지 않은 도시명입니다.");
+            }
+            else
+            {
+                await _databaseManager.RegisterNotificationAsync(userId, city, channel);
+            }
+        }
+
+        public static async Task TurnOffNotification(ulong userId, ITextChannel channel)
+        {
+            await _databaseManager.DeleteNotification(userId, channel);
+        }
+
+        public static async Task UpdateNotification(ulong userId, string city, ITextChannel channel)
+        {
+            await _databaseManager.UpdateNotificationAsync(userId, city, channel);
+        }
+    }
+}

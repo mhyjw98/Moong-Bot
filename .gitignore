@@ -147,6 +147,9 @@ coverage*.json
 coverage*.xml
 coverage*.info
 
+# add file
+config.json
+
 # Visual Studio code coverage results
 *.coverage
 *.coveragexml
