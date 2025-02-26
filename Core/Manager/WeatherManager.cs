@@ -11,7 +11,6 @@ namespace MoongBot.Core.Manager
 {
     public static class WeatherManager
     {
-        private static DiscordSocketClient _client = ServiceManager.GetService<DiscordSocketClient>();
         private static HttpClient _httpClient = new HttpClient();
 
         public static async Task<JObject> GetWeatherAsync(string city)
@@ -25,7 +24,7 @@ namespace MoongBot.Core.Manager
             var response = await _httpClient.GetStringAsync($"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={ConfigManager.Config.OpenWeatherMapApiKey}&lang=kr&units=metric");
             return JObject.Parse(response);
         }
-
+       
         public static bool IsRainy(JObject weatherData)
         {
             var weather = weatherData["weather"][0]["main"].ToString().ToLower();
@@ -162,31 +161,6 @@ namespace MoongBot.Core.Manager
             { "합천", "hapcheon" },
             { "제주", "jeju" },
             { "제주도", "jeju" }
-        };
-
-        public static bool IsValidCity(string city)
-        {
-            return CityTranslations.ContainsKey(city) || CityTranslations.ContainsValue(city);
-        }
-
-        public static bool IsEqualCity(string existCity,string inputCity)
-        {
-            if (CityTranslations.TryGetValue(inputCity, out string value))
-            {
-                if (value == existCity)
-                    return true;
-            }
-
-            if (CityTranslations.ContainsValue(inputCity))
-            {
-                foreach (var kvp in CityTranslations)
-                {
-                    if (kvp.Value == inputCity && kvp.Key == existCity)
-                        return true;
-                }
-            }
-
-            return false;
-        }
+        };     
     }
 }
