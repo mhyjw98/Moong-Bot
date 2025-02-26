@@ -14,7 +14,7 @@ namespace MoongBot.Core.Manager
         public static void SetProvider(ServiceCollection collection)
             => Provider = collection.BuildServiceProvider();
 
-        public static T GetService<T>() where T : new ()
+        public static T GetService<T>()
             => Provider.GetRequiredService<T>();
     }
 }
