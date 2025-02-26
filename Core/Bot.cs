@@ -204,8 +204,7 @@ namespace MoongBot.Core
 
                 if (DateTime.Now.Day == 1)
                 {
-                    var _slotManager = new SlotMachineManager();
-                    await _slotManager.ResetSlotRecord();
+                    await SlotMachineManager.ResetSlotRecord();
                     await CoinMarketManager.ResetCoinRecord();
                 }
 

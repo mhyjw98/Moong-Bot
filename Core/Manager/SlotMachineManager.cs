@@ -18,7 +18,7 @@ namespace MoongBot.Core.Manager
     public class SlotMachineManager
     {
         private static DiscordSocketClient _client = ServiceManager.GetService<DiscordSocketClient>();
-        private DatabaseManager dbManager = new DatabaseManager();
+        private static DatabaseManager dbManager = new DatabaseManager();
 
         private static readonly string FilePath = Path.Combine("jsonFiles", "pundingUsers.json");
         private static readonly string UsageFilePath = Path.Combine("jsonFiles", "slotUsage.json");
@@ -1228,7 +1228,7 @@ namespace MoongBot.Core.Manager
             return payout;
         }
 
-        public async Task ResetSlotRecord()
+        public static async Task ResetSlotRecord()
         {
             Console.WriteLine("슬롯 기록 삭제중...");
             bool deleteSlot = await dbManager.DeleteAllSlotMachineResultsAsync();

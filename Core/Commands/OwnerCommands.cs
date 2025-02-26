@@ -17,7 +17,6 @@ namespace MoongBot.Core.Commands
     public class OwnerCommands : ModuleBase<SocketCommandContext>
     {
         private static CoinMarketManager _coinManager = new CoinMarketManager();
-        private static SlotMachineManager _slotManager = new SlotMachineManager();
         private static DatabaseManager _dbManager = new DatabaseManager();
         private LoanService _loanService = new LoanService();
 
@@ -302,7 +301,7 @@ namespace MoongBot.Core.Commands
                 return;
             }
 
-            await _slotManager.ResetSlotRecord();
+            await SlotMachineManager.ResetSlotRecord();
         }
         [Command("코인초기화")]
         [Remarks("코인 기록 초기화")]
