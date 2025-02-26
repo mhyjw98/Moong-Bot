@@ -44,15 +44,28 @@ namespace MoongBot.Core.Manager
         [JsonProperty("AWSAccessKeyId")]
         public string AWSAccessKeyId { get; private set; }
         [JsonProperty("AWSSecretKey")]
-        public string AWSSecretKey { get; private set; }
-        [JsonProperty("targetWords")]
-        public List<string> TargetWords { get; private set; }
-
-        [JsonProperty("targetUserIds")]
-        public List<ulong> TargetUserIds { get; private set; }
+        public string AWSSecretKey { get; private set; }        
         [JsonProperty("ownerId")]
         public ulong OwnerId { get; private set; }
         [JsonProperty("openweatherapikey")]
         public string OpenWeatherMapApiKey { get; private set; }
+        [JsonProperty("gmailClientId")]
+        public string GmailClientId { get; private set; }
+        [JsonProperty("gmailClientSecret")]
+        public string GmailClientSecret { get; private set; }
+        [JsonProperty("notificationChannelId")]
+        public ulong NotificationChannelId { get; private set; }
+        [JsonProperty("moongbotChannelId")]
+        public ulong MoongBotChannelId { get; private set; }
+        [JsonProperty("lottoChannelId")]
+        public ulong LottoChannelId { get; private set; }
+        [JsonProperty("coinChannelId")]
+        public ulong CoinChannelId { get; private set; }
+        [JsonProperty("bushChannelId")]
+        public ulong BushChannelId { get; private set; }
+        [JsonProperty("emojiGuildId")]
+        public ulong EmojiGuildId { get; private set; }
+        [JsonProperty("hololGuildId")]
+        public ulong HololGuildId { get; private set; }
     }
 }
