@@ -9,5 +9,6 @@ namespace MoongBot
         static void Main(string[] args)
             => new Bot().MainAsync().GetAwaiter().GetResult();
     }
+
 }
 
