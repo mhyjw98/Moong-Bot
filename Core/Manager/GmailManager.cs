@@ -60,13 +60,6 @@ namespace MoongBot.Core.Manager
                     Console.WriteLine("Credential file saved to: " + credPath);
                 }
 
-                if (credential.Token.IsStale)
-                {
-                    Console.WriteLine("토큰이 만료됨. 갱신요청중...");
-                    await credential.RefreshTokenAsync(CancellationToken.None);
-                    Console.WriteLine("토큰 갱신 성공.");
-                }
-
                 _service = new GmailService(new BaseClientService.Initializer()
                 {
                     HttpClientInitializer = credential,
