@@ -418,7 +418,7 @@ namespace MoongBot.Core.Commands
             Bot bot = new Bot();
             await bot.AnnounceLottoResultAsync();
         }
-
+       
         //[Command("슬롯")]
         //[Remarks("테스트중인 슬롯머신")]
         //[Hidden]

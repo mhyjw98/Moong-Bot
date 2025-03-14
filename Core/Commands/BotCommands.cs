@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using AngleSharp.Text;
+using Discord;
 using Discord.Commands;
 using Discord.Interactions;
 using Discord.WebSocket;
@@ -216,6 +217,20 @@ namespace MoongBot.Core.Commands
             }
 
             await LottoManager.ShowLottoTicketsAsync(user.Id, channel as ITextChannel, user as SocketGuildUser);
+        }
+
+        [Command("스피또")]
+        [Alias("복권")]
+        [Remarks("스피또(복권)를 구매합니다. 명령어 : -스피또 [1 ~ 5의 숫자] or -복권 [1 ~ 5의 숫자], 입력한 숫자(1 ~ 5)만큼의 스피또를 구매합니다.")]
+        public async Task SpitoCommand([Remainder] string input = "1")
+        {
+            if (!int.TryParse(input, out int number) || number > 5 || number < 1)
+            {
+                await ReplyAsync($"1 ~ 5 사이의 숫자를 입력해주세요. 예시 : {ConfigManager.Config.Prefix}스피또 5");
+                return;
+            }
+
+            await LottoManager.BuySpitoAsync(Context.User.Id, number, Context.Channel as ITextChannel);
         }
 
         [Command("등록")]
