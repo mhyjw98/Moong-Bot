@@ -1,12 +1,13 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace MoongBot.Core.Manager
 {
@@ -15,12 +16,26 @@ namespace MoongBot.Core.Manager
         private static DatabaseManager _dbManager = new DatabaseManager();
 
         private static readonly string lottoPath = Path.Combine("jsonFiles", "lotto_results.json");
+        private static readonly string spitoPath = Path.Combine("jsonFiles", "user_spito.json");
         private static Random _random = new Random();
         public static Dictionary<ulong, List<List<int>>> _userTickets = new Dictionary<ulong, List<List<int>>>();
+        public static Dictionary<ulong, int> _userSpito = new Dictionary<ulong, int>();
         private List<int> _winningNumbers;
         public static readonly int maxLotto = 10;
+        public static readonly int maxSpito = 5;
         private static readonly int lottoPrice = 1;
+        private static readonly int spitoPrice = 1;
 
+        private static readonly SemaphoreSlim _fileLock = new SemaphoreSlim(1, 1);
+        private static readonly string[] AllEmojis = { "🍒", "🍋", "🍉", "⭐", "💎", "🍀" };
+        private static readonly (int Prize, double Probability, string Emoji)[] PrizePool = {
+            (10000, 0.15, "🍒"),      // 15%
+            (15000, 0.10, "🍋"),    // 10%
+            (25000, 0.06, "🍉"),    // 6%
+            (100000, 0.03, "⭐"),    // 3%
+            (200000, 0.015, "💎"),   // 1.5%
+            (1000000, 0.0016, "🍀") // 0.16%
+        };
         public void GenerateWinningNumbers()
         {
             _winningNumbers = GenerateTicket(0);
@@ -121,7 +136,7 @@ namespace MoongBot.Core.Manager
             // 구매 가능 여부 초기화            
             if (_userTickets[userId].Count >= maxLotto && userId != ConfigManager.Config.OwnerId)
             {
-                await SendEmbedAsync(channel, userId, "로또는 주에 최대 " + maxLotto + "장까지만 구매할 수 있습니다.", null);
+                await channel.SendMessageAsync($"<@{userId}> 스피또는 주에 최대 {maxLotto}장까지만 구매할 수 있습니다.");
                 return false;
             }
 
@@ -133,10 +148,7 @@ namespace MoongBot.Core.Manager
 
             if (purchasableTickets <= 0)
             {
-                string message = affordableTickets > 0
-                    ? $"로또는 주당 {maxLotto}장만 구매 가능합니다."
-                    : $"잔액이 부족합니다. 잔액 : {balance}";
-                await SendEmbedAsync(channel, userId, message, null);
+                await channel.SendMessageAsync($"잔액이 부족합니다. 잔액 : {balance}");
                 return false;
             }
 
@@ -244,6 +256,7 @@ namespace MoongBot.Core.Manager
         {
             await _dbManager.DeleteAllLottoTicketsAsync();
             _userTickets.Clear();
+            _userSpito.Clear();
         }
 
         public void SetWinningNumbers(List<int> winningNumbers)
@@ -324,6 +337,7 @@ namespace MoongBot.Core.Manager
         {
             _winningNumbers.Clear(); // 당첨 번호 초기화
             _userTickets.Clear();    // 유저 티켓 초기화
+            SaveUsersSpitoAsync();
         }
 
         public static async Task<dynamic> LoadLottoResultsFromFileAsync()
@@ -336,5 +350,171 @@ namespace MoongBot.Core.Manager
             }
             return null;
         }
+        public static async Task<bool> BuySpitoAsync(ulong userId, int number, ITextChannel channel)
+        {
+            if (!_userSpito.ContainsKey(userId))
+                _userSpito[userId] = 0;
+
+            bool isOwner = ConfigManager.Config.OwnerId == userId;
+            // 구매 가능 여부 초기화            
+            if (_userSpito[userId] >= maxSpito && isOwner)
+            {
+                await channel.SendMessageAsync($"<@{userId}> 스피또는 주에 최대 {maxSpito}장까지만 구매할 수 있습니다.");
+                return false;
+            }
+
+            double balance = await _dbManager.GetUserDollarAsync(userId);
+            int affordableTickets = Math.Min(number, (int)(balance / spitoPrice));
+            int availableSlots = maxSpito - _userSpito[userId];
+
+            int purchasableTickets = Math.Min(affordableTickets, availableSlots);
+
+            if (purchasableTickets <= 0)
+            {
+                await channel.SendMessageAsync($"잔액이 부족합니다. 잔액 : {balance}");
+                return false;
+            }
+
+            string spaceL = "\u2003\u2003\u2003";
+            string spaceM = "\u2003\u2003";
+            string spaceS = "\u2003";
+
+            ulong winningResult = 0;
+
+            if(number != purchasableTickets)
+            {
+                await channel.SendMessageAsync($"<@{userId}> 이미 {maxSpito - purchasableTickets}장 구매하여 {purchasableTickets}장만 구매됩니다.");
+                await Task.Delay(2000);
+            }
+
+            for (int n = 0; n < purchasableTickets; n++)
+            {
+                var results = new List<(string, string, int, bool)>();
+                int totalWinnings = 0;
+                string description = "";
+
+                foreach (var (prize, probability, emoji) in PrizePool)
+                {
+                    bool isWinning = _random.NextDouble() < probability;
+
+                    string emoji1, emoji2;
+                    if (isWinning)
+                    {
+                        emoji1 = emoji;
+                        emoji2 = emoji;
+                        totalWinnings += prize;
+                    }
+                    else
+                    {
+                        var nonWinningEmojis = AllEmojis.Where(e => e != emoji).ToArray();
+                        emoji1 = nonWinningEmojis[_random.Next(nonWinningEmojis.Length)];
+                        emoji2 = AllEmojis[_random.Next(AllEmojis.Length)];
+                    }
+
+                    results.Add((emoji1, emoji2, prize, isWinning));
+                }
+
+                // 첫 줄: 번호 및 이모지
+                for (int i = 0; i < results.Count; i += 3) // 3개씩 한 줄에 출력
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        if (i + j < results.Count)
+                            description += $"[{i + j + 1}] ({AllEmojis[i + j]}){spaceL}";
+                    }
+                    description += "\n";
+
+                    // 두 번째 줄: 이모지 2개 (스포일러 처리)
+                    for (int j = 0; j < 3; j++)
+                    {
+                        if (i + j < results.Count)
+                        {
+                            var (emoji1, emoji2, _, _) = results[i + j];
+                            description += $"|| {emoji1} ||{spaceS}|| {emoji2} ||{spaceM}";
+                        }
+                    }
+                    description += "\n";
+
+                    // 세 번째 줄: 당첨 금액
+                    for (int j = 0; j < 3; j++)
+                    {
+                        if (i + j < results.Count)
+                        {
+                            var (_, _, prize, _) = results[i + j];
+                            description += $"{prize:N0} 🍄{spaceM}";
+                        }
+                    }
+                    description += "\n";
+
+                    // 네 번째 줄: 당첨 여부
+                    for (int j = 0; j < 3; j++)
+                    {
+                        if (i + j < results.Count)
+                        {
+                            var (_, _, _, isWinning) = results[i + j];
+                            string winningText = isWinning ? "(당첨)" : "(꽝)";
+                            if (isWinning)
+                                description += $"||{winningText}||{spaceL}{spaceS}";
+                            else
+                                description += $"||{winningText}{spaceS}||{spaceL}{spaceS}";
+                        }
+                    }
+                    description += "\n\n";
+                }
+                string result = totalWinnings.ToString("N0") + "🍄";
+
+                if (totalWinnings < 1000000)
+                    result += spaceS;
+                if (totalWinnings < 100000)
+                    result += spaceS;
+                if (totalWinnings == 0)
+                    result += spaceM;
+
+                description += $"\n🔍 클릭해서 결과를 확인하세요!";
+                description += $"\n🎉 총 당첨 금액: || **{result}** ||";
+
+                var embed = new EmbedBuilder()
+                    .WithTitle(":tickets: 호롤로 스피또 :tickets: ")
+                    .WithDescription(description)
+                    .WithColor(Color.Gold)
+                    .Build();
+
+                await channel.SendMessageAsync(embed: embed);
+
+                winningResult += (ulong)totalWinnings;
+                _userSpito[userId]++;               
+            }
+            await _dbManager.AddDdingAsync(userId, winningResult);
+            SaveUsersSpitoAsync();
+            return true;
+        }
+        public static void SaveUsersSpitoAsync()
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(_userSpito, Formatting.Indented);
+                File.WriteAllText(spitoPath, json);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+        public static async Task LoadUsersSpito()
+        {
+            if (File.Exists(spitoPath))
+            {
+                await _fileLock.WaitAsync();
+                try
+                {
+                    var json = File.ReadAllText(spitoPath);
+                    _userSpito = JsonConvert.DeserializeObject<Dictionary<ulong, int>>(json) ?? new Dictionary<ulong, int>();
+                }
+                finally
+                {
+                    _fileLock.Release();
+                }
+            }
+        }            
     }
 }
