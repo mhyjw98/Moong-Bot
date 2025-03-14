@@ -201,7 +201,7 @@ namespace MoongBot.Core.Manager
             bool isPositiveChange = _random.Next(2) == 0; // 0이면 true, 1이면 false
             double changePercentage;           
 
-            if (isPositiveChange || currentPrice < 1)
+            if (isPositiveChange || currentPrice < 10)
             {
                 changePercentage = _random.NextDouble() * (0.08 - 0.0001) + 0.0001;
             }
