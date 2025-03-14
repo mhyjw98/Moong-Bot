@@ -80,6 +80,7 @@ namespace MoongBot.Core
 
                 await InitializeAudioFilesAsync();
                 await InitializeLottoAsync();
+                await InitializeSpitoAsync();
                 await InitializeRouletteAsync();
                 await InitializePundingAsync();
                 await InitializeLoanDataAsync();
@@ -499,7 +500,14 @@ namespace MoongBot.Core
         private async Task InitializeLottoAsync()
         {
             await _dbManager.LoadLottoTicketsAsync();
-        }        
+        }
+        private async Task InitializeSpitoAsync()
+        {
+            await Task.Run(() =>
+            {
+                LottoManager.LoadUsersSpito();
+            });
+        }
         private async Task InitializeRouletteAsync()
         {
             await Task.Run(() =>
