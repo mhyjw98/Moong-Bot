@@ -793,6 +793,7 @@ namespace MoongBot.Core.Manager
                         //.WithButton("-대출", "coinloancaution_btn", ButtonStyle.Primary)
                         //.WithButton("-상환", "repay_btn", ButtonStyle.Primary)
                         .WithButton("-룰렛", "roulette_btn", ButtonStyle.Primary)
+                        .WithButton("-복권", "spito_btn", ButtonStyle.Primary)
                         .WithButton("-자동", "auto_btn", ButtonStyle.Primary)
                         .WithButton("-수동", "manual_btn", ButtonStyle.Primary)
                         .WithButton("-슬롯", "simpleslot_btn", ButtonStyle.Primary)

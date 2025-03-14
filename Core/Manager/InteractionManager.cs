@@ -24,8 +24,8 @@ namespace MoongBot.Core.Manager
         private static string loanFilePath = Path.Combine("jsonFiles", "loanData.json");
 
         public static float interestRate = 50;
-        private int coinLimit = 1000000;
-        private int dollarLimit = 1000000;
+        private int coinLimit = 10000;
+        private int dollarLimit = 10000;
 
         public async Task SendButtonAsync(SocketCommandContext context)
         {
@@ -306,7 +306,15 @@ namespace MoongBot.Core.Manager
                     await component.DeferAsync(ephemeral: true);
                     await command.ShowLottoCommand(user, channel);                 
                         break;
+                    case "spito_btn":
+                    var spitoModal = new ModalBuilder()
+                            .WithTitle("스피또 구매 수량 입력")
+                            .WithCustomId("spito_modal")
+                            .AddTextInput($"구매할 수량을 1 ~ {LottoManager.maxSpito} 사이의 숫자로 입력해주세요.", "quantity_input", placeholder: "ex: 1", required: true)
+                            .Build();
 
+                    await component.RespondWithModalAsync(spitoModal);
+                    break;
                     case "balance_btn":
                     await component.DeferAsync(ephemeral: true);
                     await command.GetbalanceCommand(user, channel);
@@ -771,6 +779,29 @@ namespace MoongBot.Core.Manager
                     {
                         await modal.RespondAsync($"1 ~ {maxValue} 사이의 숫자를 입력해주세요.", ephemeral: true);
                     }
+                }
+            }
+            if (modal.Data.CustomId == "spito_modal")
+            {
+                var quantityInput = modal.Data.Components.First(x => x.CustomId == "quantity_input").Value;
+
+                if (int.TryParse(quantityInput, out int quantity))
+                {
+                    int maxValue = LottoManager.maxSpito;
+                    if (quantity <= maxValue && quantity > 0)
+                    {
+                        await modal.DeferAsync();
+
+                        await LottoManager.BuySpitoAsync(modal.User.Id, quantity, modal.Channel as ITextChannel);                       
+                    }
+                    else
+                    {
+                        await modal.RespondAsync($"1 ~ {maxValue} 사이의 숫자를 입력해주세요.", ephemeral: true);
+                    }
+                }
+                else
+                {
+                    await modal.RespondAsync($"올바른 숫자를 입력해주세요.", ephemeral: true);
                 }
             }
             if (modal.Data.CustomId == "numbers_modal")
