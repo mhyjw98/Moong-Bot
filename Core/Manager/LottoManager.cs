@@ -32,7 +32,7 @@ namespace MoongBot.Core.Manager
             (10000, 0.15, "🍒"),      // 15%
             (15000, 0.10, "🍋"),    // 10%
             (25000, 0.06, "🍉"),    // 6%
-            (100000, 0.03, "⭐"),    // 3%
+            (100000, 0.025, "⭐"),    // 2.5%
             (200000, 0.015, "💎"),   // 1.5%
             (1000000, 0.0016, "🍀") // 0.16%
         };
@@ -136,7 +136,7 @@ namespace MoongBot.Core.Manager
             // 구매 가능 여부 초기화            
             if (_userTickets[userId].Count >= maxLotto && userId != ConfigManager.Config.OwnerId)
             {
-                await channel.SendMessageAsync($"<@{userId}> 스피또는 주에 최대 {maxLotto}장까지만 구매할 수 있습니다.");
+                await channel.SendMessageAsync($"<@{userId}> 로또는 주에 최대 {maxLotto}장까지만 구매할 수 있습니다.");
                 return false;
             }
 
@@ -357,7 +357,7 @@ namespace MoongBot.Core.Manager
 
             bool isOwner = ConfigManager.Config.OwnerId == userId;
             // 구매 가능 여부 초기화            
-            if (_userSpito[userId] >= maxSpito && isOwner)
+            if (_userSpito[userId] >= maxSpito && !isOwner)
             {
                 await channel.SendMessageAsync($"<@{userId}> 스피또는 주에 최대 {maxSpito}장까지만 구매할 수 있습니다.");
                 return false;
@@ -367,7 +367,7 @@ namespace MoongBot.Core.Manager
             int affordableTickets = Math.Min(number, (int)(balance / spitoPrice));
             int availableSlots = maxSpito - _userSpito[userId];
 
-            int purchasableTickets = Math.Min(affordableTickets, availableSlots);
+            int purchasableTickets = isOwner ? number : Math.Min(affordableTickets, availableSlots);
 
             if (purchasableTickets <= 0)
             {
@@ -474,7 +474,7 @@ namespace MoongBot.Core.Manager
                 description += $"\n🎉 총 당첨 금액: || **{result}** ||";
 
                 var embed = new EmbedBuilder()
-                    .WithTitle(":tickets: 호롤로 스피또 :tickets: ")
+                    .WithTitle($":tickets: 호롤로 스피또 :tickets: ")
                     .WithDescription(description)
                     .WithColor(Color.Gold)
                     .Build();
