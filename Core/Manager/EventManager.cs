@@ -735,19 +735,19 @@ namespace MoongBot.Core.Manager
 
             if (channelId == ConfigManager.Config.MoongBotChannelId)
             {
-                channelDescription = $"> **날씨 정보 제공** :white_sun_small_cloud:\n**\'{ConfigManager.Config.Prefix}날씨 지역\'** 명령어를 사용하면 해당 지역의 날씨 정보를 제공해요. 날씨 정보를 제공하는 지역명은 **\'{ConfigManager.Config.Prefix}목록\'** 명령어로 확인할 수 있어요.\n\n> **TTS 기능 지원** :robot:\n**\'{ConfigManager.Config.Prefix}tts 할 말\'** or **\'{ConfigManager.Config.TtsPrefix} 할 말\'** 명령어 뒤에 쓴 텍스트를 음성메시지로 변환해 읽어줘요. 음성채널에 입장한 후 사용할 수 있어요.\n\n> **간편 TTS 기능** :microphone:\n음성 채널에 입장해서 **\'{ConfigManager.Config.Prefix}등록뭉\'** 명령어를 사용한 후에는 **\'{ConfigManager.Config.TtsPrefix}\'** 명령어를 사용하지 않아도 TTS기능이 실행돼요. 참여, 퇴장, 정지 명령어도 **\'{ConfigManager.Config.Prefix}\'**없이 사용 가능해요. 봇과 같은 음성채널에 있어야해요.\n\n> **mp3 파일 재생 기능** :arrow_forward:\n**\'{ConfigManager.Config.Prefix}등록 명령어 볼륨\'** 명령어를 쓰고 mp3 파일을 올리면 명령어와 mp3파일이 등록되어 음성채널 채팅방에서 명령어를 사용했을 때 해당 mp3파일이 설정된 볼륨값으로 재생돼요. 볼륨을 적지 않고 **\'{ConfigManager.Config.Prefix}등록 명령어\'**로 등록하면 기본 볼륨값인 70%로 적용되어요. 볼륨은 0 ~ 100의 값을 넣어주세요! **\'{ConfigManager.Config.Prefix}삭제 명령어\'**로 등록된 mp3파일을 삭제할 수 있어요. \n\n> **룰렛 & 로또** :moneybag:\n뭉봇 채널에서 명령어를 통해 룰렛을 돌리고 로또를 구매해보세요! 룰렛으로 상품과 :dollar:를 벌어 로또를 구매할 수 있어요 로또는 자동, 수동 구매가 가능하고 수동은 1~15의 6개의 숫자를 골라 구매할 수 있어요 로또 당첨 보상으로 :mushroom:을 벌어 다양한 상품을 구매해보세요!\n\n> **슬롯머신 기능** 🎰\n**{ConfigManager.Config.Prefix}슬롯머신** 명령어를 사용해 슬롯머신을 사용할 수 있어요.\n\n> **코인시장** :coin:\n\':coin: | 호롤코인\'채널에서 코인관련 소식을 듣고 코인을 매매해보세요!\n\n> **봇의 작동 여부** :placard:\n채널의 고정된 메시지를 보면 봇의 상태를 보여주는 임베드를 확인할 수 있어요.\n\n> **건의사항 및 문제 발생시** :postbox:\n<@{ConfigManager.Config.OwnerId}>에게 DM이나 귓속말로 말해주세요!";
+                channelDescription = $"> **날씨 정보 제공** :white_sun_small_cloud:\n**\'{ConfigManager.Config.Prefix}날씨 지역\'** 명령어를 사용하면 해당 지역의 날씨 정보를 제공해요. 날씨 정보를 제공하는 지역명은 **\'{ConfigManager.Config.Prefix}목록\'** 명령어로 확인할 수 있어요.\n\n> **TTS 기능 지원** :robot:\n**\'{ConfigManager.Config.Prefix}tts 할 말\'** or **\'{ConfigManager.Config.TtsPrefix} 할 말\'** 명령어 뒤에 쓴 텍스트를 음성메시지로 변환해 읽어줘요. 음성채널에 입장한 후 사용할 수 있어요.\n\n> **간편 TTS 기능** :microphone:\n음성 채널에 입장해서 **\'{ConfigManager.Config.Prefix}등록뭉\'** 명령어를 사용한 후에는 **\'{ConfigManager.Config.TtsPrefix}\'** 명령어를 사용하지 않아도 TTS기능이 실행돼요. 참여, 퇴장, 정지 명령어도 **\'{ConfigManager.Config.Prefix}\'**없이 사용 가능해요. 봇과 같은 음성채널에 있어야해요.\n\n> **mp3 파일 재생 기능** :arrow_forward:\n**\'{ConfigManager.Config.Prefix}등록 명령어 볼륨\'** 명령어를 쓰고 mp3 파일을 올리면 명령어와 mp3파일이 등록되어 음성채널 채팅방에서 명령어를 사용했을 때 해당 mp3파일이 설정된 볼륨값으로 재생돼요. 볼륨을 적지 않고 **\'{ConfigManager.Config.Prefix}등록 명령어\'**로 등록하면 기본 볼륨값인 70%로 적용되어요. 볼륨은 0 ~ 100의 값을 넣어주세요! **\'{ConfigManager.Config.Prefix}삭제 명령어\'**로 등록된 mp3파일을 삭제할 수 있어요. \n\n> **룰렛, 로또, 복권** :moneybag:\n<#{ConfigManager.Config.LottoChannelId}> 채널에서 명령어를 통해 룰렛을 돌리고 로또를 구매해보세요! 룰렛으로 상품과 :dollar:를 벌어 로또를 구매할 수 있어요 로또는 자동, 수동 구매가 가능하고 수동은 1~15의 6개의 숫자를 골라 구매할 수 있어요 로또 당첨 보상으로 :mushroom:을 벌어 다양한 상품을 구매해보세요!\n\n> **슬롯머신 기능** 🎰\n**{ConfigManager.Config.Prefix}슬롯머신** 명령어를 사용해 슬롯머신을 사용할 수 있어요.\n\n> **코인시장** :coin:\n<#{ConfigManager.Config.CoinChannelId}>채널에서 코인관련 소식을 듣고 코인을 매매해보세요!\n\n> **봇의 작동 여부** :placard:\n채널의 고정된 메시지를 보면 봇의 상태를 보여주는 임베드를 확인할 수 있어요.\n\n> **건의사항 및 문제 발생시** :postbox:\n<@{ConfigManager.Config.OwnerId}>에게 DM이나 귓속말로 말해주세요!";
             }
             if (channelId == ConfigManager.Config.CoinChannelId)
             {
                 channelDescription = 
-                     $"> **튜토리얼** :newspaper:\n**\'{ConfigManager.Config.Prefix}코인도움\'** 명령어로 코인 관련 명령어 사용법과 기능에 대한 설명을 볼 수 있어요.\n\n" +
+                     $"> **튜토리얼** :newspaper:\n**\'{ConfigManager.Config.Prefix}도움\'** 명령어로 코인 관련 명령어 사용법과 기능에 대한 설명을 볼 수 있어요.\n\n" +
                      "> **봇의 작동 여부** :placard:\n채널의 고정된 메시지를 보면 봇의 상태를 보여주는 임베드를 확인할 수 있어요.\n\n" + 
                      $"> **건의사항 및 문제 발생시** :postbox:\n<@{ConfigManager.Config.OwnerId}>에게 DM이나 귓속말로 말해주세요!";
             }
             if (channelId == ConfigManager.Config.LottoChannelId)
             {
                 channelDescription = 
-                     $"> **튜토리얼** :game_die:\n**'{ConfigManager.Config.Prefix}로또룰렛도움'** 명령어로 로또, 룰렛, 슬롯머신에 대한 설명을 볼 수 있어요.\n\n" +
+                     $"> **튜토리얼** :game_die:\n**'{ConfigManager.Config.Prefix}도움'** 명령어로 로또, 룰렛, 슬롯머신에 대한 설명을 볼 수 있어요.\n\n" +
                      $"> **봇의 작동 여부** :placard:\n채널의 고정된 메시지를 보면 봇의 상태를 보여주는 임베드를 확인할 수 있어요.\n\n" + 
                      $"> **건의사항 및 문제 발생시** :postbox:\n<@{ConfigManager.Config.OwnerId}>에게 DM이나 귓속말로 말해주세요!";
             }

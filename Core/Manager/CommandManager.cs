@@ -143,7 +143,7 @@ namespace MoongBot.Core.Manager
                 embedBuilder.WithColor(255, 145, 200);
 
                 string Description = "> **기능 설명** :game_die:\n룰렛, 슬롯머신, 코인 매매를 통해 달러(:dollar:)와 코인(:coin:)을 얻거나 사용할 수 있어요. 띵(:mushroom:)은 로또의 당첨금으로만 수급할 수 있어요.\n\n" +
-                     "> **달러(:dollar:) 의 사용처** :moneybag:\n:달러(:dollar:)로 로또와 코인시장에서 코인을 구매 가능해요 달러(:dollar:)로 할 수 있는 컨텐츠는 추가 구현 예정이에요!\n\n" +
+                     $"> **달러(:dollar:) 의 사용처** :moneybag:\n:달러(:dollar:)로 로또와 코인시장에서 코인을 구매 가능해요 달러(:dollar:)로 로또 티켓을 구매({ConfigManager.Config.Prefix}자동 10)하거나 스피또(복권)을 구매({ConfigManager.Config.Prefix}복권 5)할 수 있어요.\n\n" +
                      $"> **코인(:coin:) 의 사용처** :coin:\n코인(:mushroom:) 으로는 슬롯머신을 이용할 수 있어요. **\'{ConfigManager.Config.Prefix}슬롯머신\'** 커맨드를 사용해보세요!\n\n" +
                      $"> **띵(:mushroom:) 의 사용처** :shopping_cart:\n띵(:mushroom:) 으로는 상품을 구매할 수 있어요. **\'{ConfigManager.Config.Prefix}상점\'** 커맨드로 상품을 구매해보세요!\n\n" +
                      "> **초기화 시간** :repeat:\n룰렛은 하루에 한번 돌릴 수 있고 매일 자정에 초기화돼요, 로또는 주에 3장 구매 가능하고 로또 추첨 이후 초기화돼요!\n\n" +

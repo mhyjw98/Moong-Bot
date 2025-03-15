@@ -149,7 +149,7 @@ namespace MoongBot.Core.Manager
                 }
                 if (isTicket && await dbManager.GetTicketValueAsync(user.Id) == 0)
                 {    
-                    return (false, "슬롯머신을 이용할 티켓이 없습니다.");
+                    return (false, "도박슬롯을 이용할 티켓이 없습니다.");
                 }               
 
                 _isPlaying[user.Id] = true;
