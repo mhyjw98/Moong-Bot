@@ -588,6 +588,23 @@ namespace MoongBot.Core.Manager
         {
             if (channelId == 1267420529774690380 && authorId == 1267421762497417298)
             {
+                if(message.Embeds.Count > 0)
+                {
+                    foreach (var embed in message.Embeds)
+                    {
+                        if (embed == null || string.IsNullOrEmpty(embed.Title))
+                            return;
+
+                        string titlePattern = @"^\[아이네 뱅온\]\(.*?\)$";
+                        bool isIneOnAir = Regex.IsMatch(embed.Title, titlePattern);
+
+                        if (isIneOnAir)
+                        {
+                            await message.Channel.SendMessageAsync($"<@{ownerId}> 아이네 방송 시작!");
+                            return;
+                        }
+                    }
+                }
                 await message.Channel.SendMessageAsync($"<@{ownerId}> 아이네 방송 시작!");
                 return;
             }
