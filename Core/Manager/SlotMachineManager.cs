@@ -138,7 +138,7 @@ namespace MoongBot.Core.Manager
         public async Task<(bool, string)> RunSlotMachine(IUser user, ITextChannel channel, int input, int number, bool isTicket)
         {
             try
-            {
+            {               
                 if (_isPlaying.ContainsKey(user.Id))
                 {
                     return (false, "이미 슬롯머신을 사용중입니다.");
@@ -147,9 +147,17 @@ namespace MoongBot.Core.Manager
                 {
                     return (false, "슬롯머신을 동시에 사용할 수 있는 인원이 초과되었습니다. 잠시 후 다시 시도해주세요.");
                 }
-                if (isTicket && await dbManager.GetTicketValueAsync(user.Id) == 0)
-                {    
-                    return (false, "도박슬롯을 이용할 티켓이 없습니다.");
+
+                int userTicket = 0;
+
+                if (isTicket)
+                {
+                    userTicket = await dbManager.GetTicketValueAsync(user.Id);
+
+                    if (userTicket == 0)
+                        return (false, "도박슬롯을 이용할 티켓이 없습니다.");
+                    else
+                        number = Math.Min(number, userTicket);
                 }               
 
                 _isPlaying[user.Id] = true;
