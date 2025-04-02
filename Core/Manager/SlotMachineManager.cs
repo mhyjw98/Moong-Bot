@@ -1080,10 +1080,11 @@ namespace MoongBot.Core.Manager
             try
             {
                 bool isMinus = false;
+                int userCoin = 0;
                 if (_pundingUsers.Contains(userId))
-                {                    
-                    int coin = await dbManager.GetUserSlotCoinAsync(userId);
-                    if(coin >= 0)
+                {
+                    userCoin = await dbManager.GetUserSlotCoinAsync(userId);
+                    if(userCoin >= 0)
                     {
                         await channel.SendMessageAsync($"<@{userId}>님은 이미 지원금을 받았습니다!!");
                         return;
@@ -1100,13 +1101,20 @@ namespace MoongBot.Core.Manager
                 pundingCoin = pundingCoin + (daysSinceReference * 500);
 
                 // 지원금 코인, 달러, 티켓, 확률증가권 지급
-                await dbManager.AddSlotCoinAsync(userId, pundingCoin);
-                await dbManager.AddDollarAsync(userId, pundingDollar);
-                if (!isMinus)
+
+                if (isMinus)
+                {
+                    pundingDollar = 0;
+                    pundingCoin = -userCoin + 1000;
+                }
+                else
                 {
                     await dbManager.AddSlotTicketAsync(userId, punddingTicket);
                     await dbManager.AddSpecialAsync(userId, punddingSpecial);
-                }
+                }                
+                await dbManager.AddSlotCoinAsync(userId, pundingCoin);
+                await dbManager.AddDollarAsync(userId, pundingDollar);
+
                 string message = $"<@{userId}>님에게 지원금 {pundingCoin} :coin: 과 {pundingDollar} :dollar: 를 지급했습니다!";
 
                 if (!isMinus)
@@ -1270,6 +1278,24 @@ namespace MoongBot.Core.Manager
             }
         }
 
+        public static async Task RegistHOFAsync(DiscordSocketClient client)
+        {
+            (ulong userId, int totalAmout) = await dbManager.GetTopUserRankingAsync();
+
+            var guild = client.GetGuild(ConfigManager.Config.HololGuildId);
+            string userName = "Error";
+
+            if(guild != null)
+            {
+                var user = guild.GetUser(userId);
+                if(user != null)
+                {
+                    userName = user.Nickname ?? user.Username;
+                }
+            }
+
+            await dbManager.RegistHOFAsync(userName, totalAmout);
+        }
         private string GetTestRandomEmoji(List<(string Emoji, int Weight)> _emojis)
         {
             int totalWeight = _emojis.Sum(e => e.Weight);

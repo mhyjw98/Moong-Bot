@@ -203,10 +203,11 @@ namespace MoongBot.Core
                 await _loanService.IncreaseInterestDailyAsync();
                 Console.WriteLine("자정이 되어 대출금의 이자가 증가되었습니다.");
 
-                if (DateTime.Now.Day == 1)
+                if (now.Day == 1)
                 {
                     await SlotMachineManager.ResetSlotRecord();
                     await CoinMarketManager.ResetCoinRecord();
+                    await SlotMachineManager.RegistHOFAsync(_client);
                 }
 
                 SetResetTimer(); // 다음 자정에 다시 실행되도록 타이머 재설정

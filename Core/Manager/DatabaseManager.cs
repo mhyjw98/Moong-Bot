@@ -863,8 +863,46 @@ namespace MoongBot.Core.Manager
             {
                 await ExceptionManager.HandleExceptionAsync(ex);
                 return null;
+            }           
+        }
+
+        public async Task<(ulong UserId, int TotalAmount)> GetTopUserRankingAsync()
+        {
+            try
+            {
+                using (var connection = new SqliteConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+            SELECT UserId, SUM(Result) AS TotalAmount
+            FROM SlotMachineResults
+            WHERE UserId != 1
+            GROUP BY UserId
+            ORDER BY TotalAmount DESC
+            LIMIT 1;";
+
+                    using (var command = new SqliteCommand(query, connection))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                ulong userId = (ulong)(long)reader["UserId"];
+                                int totalAmount = Convert.ToInt32(reader["TotalAmount"]);
+                                return (userId, totalAmount);
+                            }
+                        }
+                    }
+                }
+
+                return (0, 0);
             }
-            
+            catch (Exception ex)
+            {
+                await ExceptionManager.HandleExceptionAsync(ex);
+                return (0, 0);
+            }
         }
         public async Task RegistHOFAsync(string userName, int coinValue)
         {
